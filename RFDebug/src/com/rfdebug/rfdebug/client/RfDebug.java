@@ -32,6 +32,13 @@ public class RfDebug implements EntryPoint {
    */
   public void onModuleLoad() {
 
+    // the folloowing steps are carried out
+    // 1 - reset the server data
+    // 2 - load all existing server data
+    // 3 - create and persist new data which partially contains loaded data
+    // 4 - retrieve the created data and check if all containing data is returned
+    // --> this is where you can see the error
+
     final Button sendButton = new Button("Go");
     RootPanel.get("sendButtonContainer").add(sendButton);
     sendButton.addClickHandler(new ClickHandler() {
@@ -43,7 +50,7 @@ public class RfDebug implements EntryPoint {
         EntitiesRequestContext context1 = requestFactory.entitiesRequestContext();
         requestFactory.initialize(eventBus);
 
-        // 1 - reset the date
+        // 1 - reset the server data
         context1.resetServerData().fire(new Receiver<Void>() {
 
           @Override
@@ -68,6 +75,9 @@ public class RfDebug implements EntryPoint {
 
                     ConcreteVProxy newConcreteV = context3.create(ConcreteVProxy.class);
                     newConcreteV.setVt(loadedVt);
+
+                    // editing the existing proxy doesn't help
+                    // newConcreteV.setVt(context3.edit(loadedVt));
                     newConcreteV.setConcreteStuff("concrete stuff created on the client");
                     ArrayList<AbstractVProxy> newVs = new ArrayList<AbstractVProxy>();
                     newVs.add(newConcreteV);
@@ -83,9 +93,13 @@ public class RfDebug implements EntryPoint {
                           @Override
                           public void onSuccess(List<AProxy> response) {
                             // 4 - check the return of the create method
+
+                            // the first 3 are working
                             AProxy loadedA = response.get(0);
                             ATProxy loadedAt = loadedA.getAt();
                             AbstractVProxy loadedV = loadedA.getVs().get(0);
+
+                            // this is always null -> ERROR
                             VTProxy loadedVt = loadedV.getVt();
                           }
                         });

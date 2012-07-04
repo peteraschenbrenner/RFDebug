@@ -10,8 +10,4 @@ import com.rfdebug.rfdebug.server.service.VersionedEntityLocator;
 public interface VTProxy extends EntityProxy, AbstractNamedVersionedEntity {
 
   EntityProxyId<VTProxy> stableId();
-
-  ATProxy getReferencedAt();
-
-  void setReferencedAt(ATProxy referencedAt);
 }
